@@ -1,7 +1,9 @@
 const express = require('express');
+const path = require('path');
 const fs = require('fs');
+
 const app = express();
-app.use(express.static('public')); // Para usar o HTML
+app.use(express.static(path.join(__dirname, 'public'))); // Para usar o HTML
 
 const API_KEY = 'a664c18e055f4da499231225a998d7a8';
 const PORT = 3000;
@@ -13,7 +15,7 @@ app.get('/api/news', async function (req, res) {
     const query = req.query.q || 'Brasil'; // Valor padrão
 
     try {
-        const response = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=10&language=pt&sortBy=publishedAt&apiKey=${API_KEY}`);
+        const response = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=5&language=pt&sortBy=publishedAt&apiKey=${API_KEY}`);
         const data = await response.json();
         res.json(data.articles);
 
