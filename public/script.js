@@ -12,28 +12,30 @@ async function buscar() {
   loading.style.display = "block";
 
   try {
-    // Faz a chamada para a rota do Express
-    const response = await fetch(`/api/news?q=${query}`);
-    const articles = await response.json();
+    
+    const response = await fetch(`/api/news?q=${query}`); // Chamar o express
+    let articles = await response.json();
 
     loading.style.display = "none";
 
     if (articles.length === 0) {
-      resultsDiv.innerHTML = "<p>Nenhuma notícia encontrada.</p>";
+      resultsDiv.innerHTML = "<p style='color: #fff; font-weight: bold; font-size: 16px;'>Nenhuma notícia encontrada.</p>";
       return;
     }
 
     // Retorno de noticias
     articles.forEach( function (article) {
-      const articleElement = document.createElement("div");
+      let articleElement = document.createElement("div");
       articleElement.classList.add("article");
-      articleElement.innerHTML = `
+      articleElement.innerHTML =`
                 <h3>${article.title}</h3>
                 <p>${article.description || "Sem descrição disponível."}</p>
+                <p style='font-style: italic'>Fonte: ${article.source.name}</p>
                 <a href="${article.url}" target="_blank">Ler mais →</a>
-            `;
+              `;
       resultsDiv.appendChild(articleElement);
     });
+    
   } catch (error) {
     loading.style.display = "none";
     console.error("Erro na requisição:", error);

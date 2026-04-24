@@ -1,30 +1,39 @@
 const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
-require('dotenv').config();
-
+const fs = require('fs');
 const app = express();
-app.use(cors());
 app.use(express.static('public')); // Para usar o HTML
 
-const API_KEY = process.env.NEWS_API_KEY;
+const API_KEY = 'a664c18e055f4da499231225a998d7a8';
+const PORT = 3000;
+
 
 // Buscar as notícias
 app.get('/api/news', async function (req, res) {
-    const query = req.query.q || ''; // Valor padrão
+
+    const query = req.query.q || 'Brasil'; // Valor padrão
+
     try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${query}&pageSize=10&language=pt&apiKey=${API_KEY}`);
-        res.json(response.data.articles);
-        console.log('termo: ' + query)
-    } catch (error) {
+        const response = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=10&language=pt&sortBy=publishedAt&apiKey=${API_KEY}`);
+        const data = await response.json();
+        res.json(data.articles);
+
+        console.log(data.articles);
+        console.log('termo: ' + query);
+
+        let jsonContent = JSON.stringify(data.articles, null, 2);
+        fs.writeFileSync('search_news.json', jsonContent);
+        
+
+    } 
+    
+    catch (error) {
+        
         res.status(500).json({ error: 'Erro ao buscar notícias' });
+
     }
     
 });
 
-const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, function () {
     console.log('Servidor rodando na porta ' + PORT);
 });
-
